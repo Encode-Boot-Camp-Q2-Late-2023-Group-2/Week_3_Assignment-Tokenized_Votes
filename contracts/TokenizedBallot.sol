@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./MyERC20Votes.sol";
 
-contract Ballot {
+contract TokenizedBallot{
     struct Proposal {
         bytes32 name; // short name (up to 32 bytes)
         uint voteCount; // number of accumulated votes
