@@ -1,46 +1,47 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
+/// @title Voting with delegation.
 
-interface IMyVoteToken {
-    function getPastVotes(address, uint256) external view returns (uint256);
-}
+import "./MyERCVotes.sol";
 
 contract Ballot {
     struct Proposal {
-        bytes32 name;
-        uint voteCount;
+        bytes32 name; // short name (up to 32 bytes)
+        uint voteCount; // number of accumulated votes
     }
-
-    IMyVoteToken public tokenContract;
+    MyERC20Votes tokencontract;
     Proposal[] public proposals;
-    uint256 public targetBlockNumber;
+    uint256 blockNumber;
+    mapping(address => uint256) VotingPowerSpent;
 
-    mapping(address => uint) public votingPowerSpent;
-
+    /// Create a new ballot to choose one of `proposalNames`.
     constructor(
         bytes32[] memory proposalNames,
-        address _tokenContract,
-        uint256 _targetBlockNumber
+        address _tokencontract,
+        uint256 _blockNumber
     ) {
-        tokenContract = IMyVoteToken(_tokenContract);
-        targetBlockNumber = _targetBlockNumber;
+        tokencontract = MyERC20Votes(_tokencontract);
+        blockNumber = _blockNumber;
         for (uint i = 0; i < proposalNames.length; i++) {
             proposals.push(Proposal({name: proposalNames[i], voteCount: 0}));
         }
     }
 
-    function vote(uint proposal, uint256 _amount) external {
-        require(votingPower(msg.sender) >= _amount);
-        votingPowerSpent[msg.sender] += _amount;
-        proposals[proposal].voteCount += _amount;
+    function vote(uint proposal, uint256 amount) external {
+        require(votingPower(msg.sender) >= amount);
+        require(tokencontract.getVotes(msg.sender) >= amount);
+        VotingPowerSpent[msg.sender] += amount;
+        proposals[proposal].voteCount += amount;
     }
 
-    function votingPower(address _account) public view returns (uint256) {
+    function votingPower(address account) public view returns (uint256) {
         return
-            tokenContract.getPastVotes(msg.sender, targetBlockNumber) -
-            votingPowerSpent[_account];
+            tokencontract.getPastVotes(account, blockNumber) -
+            VotingPowerSpent[account];
     }
 
+    /// @dev Computes the winning proposal taking all
+    /// previous votes into account.
     function winningProposal() public view returns (uint winningProposal_) {
         uint winningVoteCount = 0;
         for (uint p = 0; p < proposals.length; p++) {
@@ -51,6 +52,9 @@ contract Ballot {
         }
     }
 
+    // Calls winningProposal() function to get the index
+    // of the winner contained in the proposals array and then
+    // returns the name of the winner
     function winnerName() external view returns (bytes32 winnerName_) {
         winnerName_ = proposals[winningProposal()].name;
     }
