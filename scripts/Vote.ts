@@ -4,9 +4,8 @@ dotenv.config();
 
 async function main() {
 
-    const contractAddress = "0x8F9d7b1e03d24d76A9193D9d2297703aeF0Aec79";
+    const contractAddress = "0xB1da050A25127b63275E46fe7e3356259DaF5B93";
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
-    console.log(`Connected to the address: ${wallet.address}`);
     const provider = ethers.getDefaultProvider('sepolia', {
         alchemy: process.env.ALCHEMY_API_KEY,
         etherscan: process.env.ETHERSCAN_API_KEY,
@@ -16,12 +15,13 @@ async function main() {
     const voterWallet = new ethers.Wallet(process.env.VOTER_PRIVATE_KEY ?? "")
     const voter1 = voterWallet.connect(provider)
     const contract = await ethers.getContractAt("TokenizedBallot", contractAddress, deployer);
-    const proposal1 = await contract.proposals(1);
-    console.log(ethers.utils.formatUnits(proposal1.voteCount))
+    const proposal2 = await contract.proposals(1);
+    console.log(`Before Voting Proposal2 has vote count: ${ethers.utils.formatUnits(proposal2.voteCount)}`)
     const votetx = await contract.connect(voter1).vote(1, ethers.utils.parseUnits("20"))
-    await votetx.wait();
-    const proposal = await contract.proposals(0);
-    console.log(ethers.utils.formatUnits(proposal.voteCount))
+    const votercpt= await votetx.wait();
+    console.log(`${voter1.address} voted 20 tokens for Proposal2 at transaction hash ${votercpt.transactionHash}`)
+    const proposal = await contract.proposals(1);
+    console.log(`After Voting Proposal2 has vote count: ${ethers.utils.formatUnits(proposal.voteCount)}`)
 }
 
 main().catch((error) => {

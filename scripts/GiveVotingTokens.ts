@@ -18,15 +18,14 @@ async function main() {
     const voterWallet = new ethers.Wallet(process.env.VOTER_PRIVATE_KEY ?? "")
     const voter1 = voterWallet.connect(provider)
     const contract = await ethers.getContractAt("MyERC20Votes", contractAddress, deployer);
-    const voter1powerBefore = ethers.utils.formatUnits(await contract.getVotes(voter1.address))
-    console.log(`Before Delegating voter 1 has ${voter1powerBefore} voting Power`)
-
-    const voter1delegatetx = await contract.connect(voter1).delegate(voter1.address);
-    const voter1delegatercpt = await voter1delegatetx.wait();
-    console.log(`Voter 1 delegated at transaction hash ${voter1delegatercpt.transactionHash} and at block Number ${voter1delegatercpt.blockNumber}`)
-
-    const voter1power = ethers.utils.formatUnits(await contract.getVotes(voter1.address))
-    console.log(`Before Delegating voter 1 has ${voter1power} voting Power`)
+    //Give voter 1 voting powers
+    const beforeVotes= ethers.utils.formatUnits(await contract.balanceOf(voter1.address))
+    console.log(`Before Minting voter 1 has ${beforeVotes} voting tokens`)
+    const voter1tx = await contract.mint(voter1.address, ethers.utils.parseUnits("100"));
+    const voter1rcpt = await voter1tx.wait();
+    console.log(`20 Tokens are minted for voter1 at transaction hash ${voter1rcpt.transactionHash} block number ${voter1rcpt.blockNumber}`)
+    const aftereVotes= ethers.utils.formatUnits(await contract.balanceOf(voter1.address))
+    console.log(`After Minting voter 1 has ${aftereVotes} voting tokens`)
 }
 
 main().catch((error) => {
