@@ -23,7 +23,7 @@ async function main() {
     console.log(`Before Minting voter 1 has ${beforeVotes} voting tokens`)
     const voter1tx = await contract.mint(voter1.address, ethers.utils.parseUnits("100"));
     const voter1rcpt = await voter1tx.wait();
-    console.log(`20 Tokens are minted for voter1 at transaction hash ${voter1rcpt.transactionHash} block number ${voter1rcpt.blockNumber}`)
+    console.log(`100 Tokens are minted for ${voter1.address} at transaction hash ${voter1rcpt.transactionHash} block number ${voter1rcpt.blockNumber}`)
     const aftereVotes= ethers.utils.formatUnits(await contract.balanceOf(voter1.address))
     console.log(`After Minting voter 1 has ${aftereVotes} voting tokens`)
 }

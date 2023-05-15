@@ -28,7 +28,7 @@ Transaction Hash: [0xb54dedc78886e71245412332afa393f4ec6e9d29273f56f4e01b6198c99
 Console output
 ```
 Before Minting voter 1 has 0.0 voting tokens
-20 Tokens are minted for voter1 at transaction hash 0xb54dedc78886e71245412332afa393f4ec6e9d29273f56f4e01b6198c990f949 block number 3488869
+100 Tokens are minted for 0xE3407c2af85F9DB592CbF6dA5b4B6b26cAcf4A96 at transaction hash 0xb54dedc78886e71245412332afa393f4ec6e9d29273f56f4e01b6198c990f949 block number 3488869
 After Minting voter 1 has 100.0 voting tokens
 ```
 ### Giving voting Rights
