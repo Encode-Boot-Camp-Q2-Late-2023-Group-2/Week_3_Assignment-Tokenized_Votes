@@ -13,15 +13,9 @@ async function main() {
         infura: process.env.INFURA_API_KEY
     });
     const deployer = wallet.connect(provider);
-    const voterWallet = new ethers.Wallet(process.env.VOTER_PRIVATE_KEY ?? "")
-    const voter1 = voterWallet.connect(provider)
     const contract = await ethers.getContractAt("TokenizedBallot", contractAddress, deployer);
-    const proposal1 = await contract.proposals(1);
-    console.log(ethers.utils.formatUnits(proposal1.voteCount))
-    const votetx = await contract.connect(voter1).vote(1, ethers.utils.parseUnits("20"))
-    await votetx.wait();
-    const proposal = await contract.proposals(0);
-    console.log(ethers.utils.formatUnits(proposal.voteCount))
+    console.log(ethers.utils.parseBytes32String(await contract.winnerName()))
+    console.log(await contract.winningProposal())
 }
 
 main().catch((error) => {
